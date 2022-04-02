@@ -16,8 +16,8 @@ export abstract class Actor extends PIXI.Graphics {
 
 
 class Background extends Actor {
-
-}
+hello:any;
+};
 
 @Component({
   selector: 'catakiller-root',
@@ -40,7 +40,19 @@ export class AppComponent {
     // const bg =  PIXI.Texture.fromLoader("../assets/",'../assets/')
     const texture = PIXI.Texture.from('../assets/testdawg.png');
     const sprite1 = new PIXI.Sprite(texture);
-    sprite1.anchor.set(0.5)
+    sprite1.anchor.set(0.5);
+    sprite1._height= window.innerHeight
+    sprite1._width= window.innerWidth
+     sprite1.x = screen.width;
+     sprite1.y = screen.height ;
+    //this.app.ticker.add((delta)=> sprite1.rotation += 0.05 *delta);
+    sprite1.interactive= true;
+    sprite1.buttonMode = true;
+    sprite1.on('pointerDown', onclick );
+    this.app.stage.addChild(sprite1);
 
+     function onclick(){
+       sprite1.scale.x *= 1.25;
+     }
   }
 }
