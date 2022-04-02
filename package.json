@@ -1,23 +1,4 @@
 {
-  "name": "gamejam",
-  "version": "1.0.0",
-  "description": "What a beautiful life",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/VileEnd/LudumDare50.git"
-  },
-  "keywords": [
-    "game",
-    "bayblon.js"
-  ],
-  "author": "ChoCho",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/VileEnd/LudumDare50/issues"
-  },
-  "homepage": "https://github.com/VileEnd/LudumDare50#readme"
+  "name": "GameJam",
+  "packageManager": "yarn@3.2.0"
 }

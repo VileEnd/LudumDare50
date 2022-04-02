@@ -5,3 +5,5 @@
 /httpRequests/
 # CodeStream ignored files
 /../../GameJam\.idea/codestream.xml
+.idea
+
