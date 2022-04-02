@@ -1,4 +1,11 @@
 {
   "name": "GameJam",
-  "packageManager": "yarn@3.2.0"
+  "packageManager": "yarn@3.2.0",
+  "devDependencies": {
+    "@babylonjs/core": "^5.0.2",
+    "@babylonjs/inspector": "^5.0.2"
+  },
+  "dependencies": {
+    "typescript": "^4.6.3"
+  }
 }

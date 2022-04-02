@@ -33,17 +33,175 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         [null, {\
           "packageLocation": "./",\
           "packageDependencies": [\
+            ["@babylonjs/core", "npm:5.0.2"],\
+            ["@babylonjs/inspector", "virtual:62e4f14cd4c31adcc553cf196b812598ba9ef9ccc94e0de075ca0ed05bf7486e5c3207862c9732fa9e713391498db7291ff344f5e095242ce14a212c40a4a68f#npm:5.0.2"],\
+            ["typescript", "patch:typescript@npm%3A4.6.3#~builtin<compat/typescript>::version=4.6.3&hash=bda367"]\
           ],\
           "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@babylonjs/core", [\
+        ["npm:5.0.2", {\
+          "packageLocation": "./.yarn/cache/@babylonjs-core-npm-5.0.2-c77bef9698-6cb160a8ba.zip/node_modules/@babylonjs/core/",\
+          "packageDependencies": [\
+            ["@babylonjs/core", "npm:5.0.2"],\
+            ["tslib", "npm:2.3.1"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@babylonjs/gui", [\
+        ["npm:5.0.2", {\
+          "packageLocation": "./.yarn/cache/@babylonjs-gui-npm-5.0.2-7dbd004b28-3b17aa5822.zip/node_modules/@babylonjs/gui/",\
+          "packageDependencies": [\
+            ["@babylonjs/gui", "npm:5.0.2"],\
+            ["@babylonjs/core", "npm:5.0.2"],\
+            ["tslib", "npm:2.3.1"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@babylonjs/inspector", [\
+        ["npm:5.0.2", {\
+          "packageLocation": "./.yarn/cache/@babylonjs-inspector-npm-5.0.2-9dfc736234-cec25f1e7b.zip/node_modules/@babylonjs/inspector/",\
+          "packageDependencies": [\
+            ["@babylonjs/inspector", "npm:5.0.2"]\
+          ],\
+          "linkType": "SOFT"\
+        }],\
+        ["virtual:62e4f14cd4c31adcc553cf196b812598ba9ef9ccc94e0de075ca0ed05bf7486e5c3207862c9732fa9e713391498db7291ff344f5e095242ce14a212c40a4a68f#npm:5.0.2", {\
+          "packageLocation": "./.yarn/__virtual__/@babylonjs-inspector-virtual-7f4289fb12/0/cache/@babylonjs-inspector-npm-5.0.2-9dfc736234-cec25f1e7b.zip/node_modules/@babylonjs/inspector/",\
+          "packageDependencies": [\
+            ["@babylonjs/inspector", "virtual:62e4f14cd4c31adcc553cf196b812598ba9ef9ccc94e0de075ca0ed05bf7486e5c3207862c9732fa9e713391498db7291ff344f5e095242ce14a212c40a4a68f#npm:5.0.2"],\
+            ["@babylonjs/core", "npm:5.0.2"],\
+            ["@babylonjs/gui", "npm:5.0.2"],\
+            ["@babylonjs/loaders", "npm:5.0.2"],\
+            ["@babylonjs/materials", "npm:5.0.2"],\
+            ["@babylonjs/serializers", "npm:5.0.2"],\
+            ["@fortawesome/fontawesome-svg-core", "npm:6.1.1"],\
+            ["@fortawesome/free-regular-svg-icons", "npm:6.1.1"],\
+            ["@fortawesome/free-solid-svg-icons", "npm:6.1.1"],\
+            ["@types/react", null],\
+            ["@types/react-dom", null]\
+          ],\
+          "packagePeers": [\
+            "@types/react-dom",\
+            "@types/react"\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@babylonjs/loaders", [\
+        ["npm:5.0.2", {\
+          "packageLocation": "./.yarn/cache/@babylonjs-loaders-npm-5.0.2-12276fe79c-440e50c1e7.zip/node_modules/@babylonjs/loaders/",\
+          "packageDependencies": [\
+            ["@babylonjs/loaders", "npm:5.0.2"],\
+            ["@babylonjs/core", "npm:5.0.2"],\
+            ["babylonjs-gltf2interface", "npm:5.0.2"],\
+            ["tslib", "npm:2.3.1"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@babylonjs/materials", [\
+        ["npm:5.0.2", {\
+          "packageLocation": "./.yarn/cache/@babylonjs-materials-npm-5.0.2-e11a848fbc-e7109fcb59.zip/node_modules/@babylonjs/materials/",\
+          "packageDependencies": [\
+            ["@babylonjs/materials", "npm:5.0.2"],\
+            ["@babylonjs/core", "npm:5.0.2"],\
+            ["tslib", "npm:2.3.1"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@babylonjs/serializers", [\
+        ["npm:5.0.2", {\
+          "packageLocation": "./.yarn/cache/@babylonjs-serializers-npm-5.0.2-511fe007e5-016469dfd4.zip/node_modules/@babylonjs/serializers/",\
+          "packageDependencies": [\
+            ["@babylonjs/serializers", "npm:5.0.2"],\
+            ["@babylonjs/core", "npm:5.0.2"],\
+            ["babylonjs-gltf2interface", "npm:5.0.2"],\
+            ["tslib", "npm:2.3.1"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@fortawesome/fontawesome-common-types", [\
+        ["npm:6.1.1", {\
+          "packageLocation": "./.yarn/unplugged/@fortawesome-fontawesome-common-types-npm-6.1.1-4c6a8fd5e4/node_modules/@fortawesome/fontawesome-common-types/",\
+          "packageDependencies": [\
+            ["@fortawesome/fontawesome-common-types", "npm:6.1.1"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@fortawesome/fontawesome-svg-core", [\
+        ["npm:6.1.1", {\
+          "packageLocation": "./.yarn/unplugged/@fortawesome-fontawesome-svg-core-npm-6.1.1-521ea4a8a9/node_modules/@fortawesome/fontawesome-svg-core/",\
+          "packageDependencies": [\
+            ["@fortawesome/fontawesome-svg-core", "npm:6.1.1"],\
+            ["@fortawesome/fontawesome-common-types", "npm:6.1.1"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@fortawesome/free-regular-svg-icons", [\
+        ["npm:6.1.1", {\
+          "packageLocation": "./.yarn/unplugged/@fortawesome-free-regular-svg-icons-npm-6.1.1-6f0406dc20/node_modules/@fortawesome/free-regular-svg-icons/",\
+          "packageDependencies": [\
+            ["@fortawesome/free-regular-svg-icons", "npm:6.1.1"],\
+            ["@fortawesome/fontawesome-common-types", "npm:6.1.1"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@fortawesome/free-solid-svg-icons", [\
+        ["npm:6.1.1", {\
+          "packageLocation": "./.yarn/unplugged/@fortawesome-free-solid-svg-icons-npm-6.1.1-ab68dfcd79/node_modules/@fortawesome/free-solid-svg-icons/",\
+          "packageDependencies": [\
+            ["@fortawesome/free-solid-svg-icons", "npm:6.1.1"],\
+            ["@fortawesome/fontawesome-common-types", "npm:6.1.1"]\
+          ],\
+          "linkType": "HARD"\
         }]\
       ]],\
       ["GameJam", [\
         ["workspace:.", {\
           "packageLocation": "./",\
           "packageDependencies": [\
-            ["GameJam", "workspace:."]\
+            ["GameJam", "workspace:."],\
+            ["@babylonjs/core", "npm:5.0.2"],\
+            ["@babylonjs/inspector", "virtual:62e4f14cd4c31adcc553cf196b812598ba9ef9ccc94e0de075ca0ed05bf7486e5c3207862c9732fa9e713391498db7291ff344f5e095242ce14a212c40a4a68f#npm:5.0.2"],\
+            ["typescript", "patch:typescript@npm%3A4.6.3#~builtin<compat/typescript>::version=4.6.3&hash=bda367"]\
           ],\
           "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["babylonjs-gltf2interface", [\
+        ["npm:5.0.2", {\
+          "packageLocation": "./.yarn/cache/babylonjs-gltf2interface-npm-5.0.2-535460246f-004996350d.zip/node_modules/babylonjs-gltf2interface/",\
+          "packageDependencies": [\
+            ["babylonjs-gltf2interface", "npm:5.0.2"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["tslib", [\
+        ["npm:2.3.1", {\
+          "packageLocation": "./.yarn/cache/tslib-npm-2.3.1-0e21e18015-de17a98d46.zip/node_modules/tslib/",\
+          "packageDependencies": [\
+            ["tslib", "npm:2.3.1"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["typescript", [\
+        ["patch:typescript@npm%3A4.6.3#~builtin<compat/typescript>::version=4.6.3&hash=bda367", {\
+          "packageLocation": "./.yarn/cache/typescript-patch-30b732d1e2-6bf45caf84.zip/node_modules/typescript/",\
+          "packageDependencies": [\
+            ["typescript", "patch:typescript@npm%3A4.6.3#~builtin<compat/typescript>::version=4.6.3&hash=bda367"]\
+          ],\
+          "linkType": "HARD"\
         }]\
       ]]\
     ]\

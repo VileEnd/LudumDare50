@@ -3,9 +3,152 @@
 
 __metadata:
   version: 6
+  cacheKey: 8
+
+"@babylonjs/core@npm:^5.0.2":
+  version: 5.0.2
+  resolution: "@babylonjs/core@npm:5.0.2"
+  dependencies:
+    tslib: ^2.3.1
+  checksum: 6cb160a8baaa0897427bb5c7ab870e10678941a266283598be0783af9781c6f1c22f3c378a8e0bae4e7719edbaeea0bc062d9c9ed4620f36600a5591d953897c
+  languageName: node
+  linkType: hard
+
+"@babylonjs/gui@npm:^5.0.2":
+  version: 5.0.2
+  resolution: "@babylonjs/gui@npm:5.0.2"
+  dependencies:
+    "@babylonjs/core": ^5.0.2
+    tslib: ^2.3.1
+  checksum: 3b17aa58225d06eb2ce9c690ce8c3bb3266f54ac82c88375f3c89af8f5f8dc2afafe0e25c757363e204b818c9b835ea7141c0226ddb80adc4bbf58d325c0c659
+  languageName: node
+  linkType: hard
+
+"@babylonjs/inspector@npm:^5.0.2":
+  version: 5.0.2
+  resolution: "@babylonjs/inspector@npm:5.0.2"
+  dependencies:
+    "@babylonjs/core": ^5.0.2
+    "@babylonjs/gui": ^5.0.2
+    "@babylonjs/loaders": ^5.0.2
+    "@babylonjs/materials": ^5.0.2
+    "@babylonjs/serializers": ^5.0.2
+    "@fortawesome/fontawesome-svg-core": ^6.1.0
+    "@fortawesome/free-regular-svg-icons": ^6.0.0
+    "@fortawesome/free-solid-svg-icons": ^6.0.0
+  peerDependencies:
+    "@types/react": ">=16.7.3"
+    "@types/react-dom": ">=16.0.9"
+  checksum: cec25f1e7ba501f3821412c9854b7bc955a96ece9ace67ca4cfca74899c4acb8d69de399502f470e74874fb16b127cd3fbc0968734591c9153aca9501a87e23f
+  languageName: node
+  linkType: hard
+
+"@babylonjs/loaders@npm:^5.0.2":
+  version: 5.0.2
+  resolution: "@babylonjs/loaders@npm:5.0.2"
+  dependencies:
+    "@babylonjs/core": ^5.0.2
+    babylonjs-gltf2interface: ^5.0.2
+    tslib: ^2.3.1
+  checksum: 440e50c1e7b8ba53d48d1eb9d21270e578293b80b4e0933abc52fa690adad9a93b80e98dbbf70e17121626e7890dd32943b7a67200e875eac50c0fee217a604d
+  languageName: node
+  linkType: hard
+
+"@babylonjs/materials@npm:^5.0.2":
+  version: 5.0.2
+  resolution: "@babylonjs/materials@npm:5.0.2"
+  dependencies:
+    "@babylonjs/core": ^5.0.2
+    tslib: ^2.3.1
+  checksum: e7109fcb597d3221d6ba1e27fd143f643aa605628d7f758107f78428968ed745bd2db721345a227580885420abe2fadba86de549026100c22265736f4df8a13f
+  languageName: node
+  linkType: hard
+
+"@babylonjs/serializers@npm:^5.0.2":
+  version: 5.0.2
+  resolution: "@babylonjs/serializers@npm:5.0.2"
+  dependencies:
+    "@babylonjs/core": ^5.0.2
+    babylonjs-gltf2interface: ^5.0.2
+    tslib: ^2.3.1
+  checksum: 016469dfd4463ee60e6ca847b6ba3fbe2a64f02a81bb98721511dd4c81bc43c089fa0a30a3f98e03ad6a25c8b9d1e4009f8606a6a1cf361d92842d1cd3a933ff
+  languageName: node
+  linkType: hard
+
+"@fortawesome/fontawesome-common-types@npm:6.1.1":
+  version: 6.1.1
+  resolution: "@fortawesome/fontawesome-common-types@npm:6.1.1"
+  checksum: 4db285557dd9d178e313a9596ad1c4ba84e9d47efb53dea3206de1bf98252574e0d95c3a0b114cc3cb5f162e2622a2cf8f037011fc98818ccade7bfb6c0c335b
+  languageName: node
+  linkType: hard
+
+"@fortawesome/fontawesome-svg-core@npm:^6.1.0":
+  version: 6.1.1
+  resolution: "@fortawesome/fontawesome-svg-core@npm:6.1.1"
+  dependencies:
+    "@fortawesome/fontawesome-common-types": 6.1.1
+  checksum: bf3b09a1ec3c5d6be30ea04c83dffb921c5a457c547fb1b99b814591489efabf939f669878cc5b48deb9771ef705209a1bb1b3088e66f6873cc9b34cbf4c781c
+  languageName: node
+  linkType: hard
+
+"@fortawesome/free-regular-svg-icons@npm:^6.0.0":
+  version: 6.1.1
+  resolution: "@fortawesome/free-regular-svg-icons@npm:6.1.1"
+  dependencies:
+    "@fortawesome/fontawesome-common-types": 6.1.1
+  checksum: 945ec9267a53127302905f16ae6ca4be0cefbc7f3399a41a5c685ab2a73a807e8616c7202d70a775cddfcb63f21fa920aea4a1c48515a85c40f489924165a6c8
+  languageName: node
+  linkType: hard
+
+"@fortawesome/free-solid-svg-icons@npm:^6.0.0":
+  version: 6.1.1
+  resolution: "@fortawesome/free-solid-svg-icons@npm:6.1.1"
+  dependencies:
+    "@fortawesome/fontawesome-common-types": 6.1.1
+  checksum: 9c42f45af9e75410d9e20a110c4262ded1a778887dc3b1200c0576f6b226e6a5568fb85a862090b45b06060f878798ddde60b987ef56aafccbaa1e7a378dd17c
+  languageName: node
+  linkType: hard
 
 "GameJam@workspace:.":
   version: 0.0.0-use.local
   resolution: "GameJam@workspace:."
+  dependencies:
+    "@babylonjs/core": ^5.0.2
+    "@babylonjs/inspector": ^5.0.2
+    typescript: ^4.6.3
   languageName: unknown
   linkType: soft
+
+"babylonjs-gltf2interface@npm:^5.0.2":
+  version: 5.0.2
+  resolution: "babylonjs-gltf2interface@npm:5.0.2"
+  checksum: 004996350d5b5aa934e0f1311a31298381f2be4cc179bcffe853aaa948c7831f960c8db4fbe2fb07da2385bd4a47eaa060ad5c44afa9de7c815b33ea59291640
+  languageName: node
+  linkType: hard
+
+"tslib@npm:^2.3.1":
+  version: 2.3.1
+  resolution: "tslib@npm:2.3.1"
+  checksum: de17a98d4614481f7fcb5cd53ffc1aaf8654313be0291e1bfaee4b4bb31a20494b7d218ff2e15017883e8ea9626599b3b0e0229c18383ba9dce89da2adf15cb9
+  languageName: node
+  linkType: hard
+
+"typescript@npm:^4.6.3":
+  version: 4.6.3
+  resolution: "typescript@npm:4.6.3"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: 255bb26c8cb846ca689dd1c3a56587af4f69055907aa2c154796ea28ee0dea871535b1c78f85a6212c77f2657843a269c3a742d09d81495b97b914bf7920415b
+  languageName: node
+  linkType: hard
+
+"typescript@patch:typescript@^4.6.3#~builtin<compat/typescript>":
+  version: 4.6.3
+  resolution: "typescript@patch:typescript@npm%3A4.6.3#~builtin<compat/typescript>::version=4.6.3&hash=bda367"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: 6bf45caf847062420592e711bc9c28bf5f9a9a7fa8245343b81493e4ededae33f1774009d1234d911422d1646a2c839f44e1a23ecb111b40a60ac2ea4c1482a8
+  languageName: node
+  linkType: hard
