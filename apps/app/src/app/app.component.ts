@@ -61,28 +61,10 @@ export class AppComponent {
     console.log(window.innerHeight, window.innerWidth)
     document.body.appendChild(this.app.view);
     PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
-    const texture = PIXI.Texture.from('../assets/CuisineV1.jpg');
+    const texture = PIXI.Texture.from('../assets/backgrounds/CuisineV1.jpg');
     const sprite1 = new PIXI.Sprite(texture);
     //define ratio
-
-backgroundAlignment(sprite1,window)
-
-    // if(imageRatio > windowRatio) {
-    //   sprite1.height = sprite1.height / (sprite1.width / window.innerWidth);
-    //   sprite1.width = window.innerWidth;
-    //   sprite1.position.x = 0;
-    //   sprite1.position.y = (window.innerHeight - sprite1.height) / 2;
-    //   console.log("tst",'${sprite1.height, sprite1.position}')
-    // }else{
-    //   sprite1.width =  window.innerWidth;
-    //   sprite1.height = window.innerHeight;
-    //   sprite1.position.y = 0;
-    //   sprite1.position.x = (window.innerWidth - sprite1.width) / 2;
-    //   console.log(`${ sprite1.height} noo ${ sprite1.width}`)
-    // }
-    //
-
-
+    backgroundAlignment(sprite1,window)
     sprite1.interactive= true;
     sprite1.buttonMode = true;
     sprite1.on('pointerdown', onclick );
