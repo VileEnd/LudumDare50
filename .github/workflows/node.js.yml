@@ -25,7 +25,6 @@ jobs:
         uses: cloudflare/wrangler-action@1.2.0
         with:
           apiKey: ${{ secrets.CF_API_KEY }}
-          email: ${{ secrets.CF_EMAIL }}
 
   pr:
     runs-on: ubuntu-latest
