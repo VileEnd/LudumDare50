@@ -30,7 +30,8 @@ export abstract class Actor extends PIXI.Graphics {
 }
 
 const sounds:any [] = [
-  sound.add('woop','../assets/sound/build1soundTest_01.mp3' )
+  sound.add('woop','../assets/sound/build1soundTest_01.mp3' ),
+  sound.add('toaster-start','../assets/sound/toaster-start(short)_01.mp3')
 ]
 
 
@@ -75,7 +76,7 @@ export class AppComponent {
 
     toasterI.interactive = true;
     toasterI.buttonMode =true;
-    toasterI.on('pointerdown', onclick)
+    toasterI.on('pointerdown', ToasterSound)
     this.app.stage.addChild(toasterI)
 
 this.app.stage.addChild(catC);
@@ -85,6 +86,10 @@ toasterI.addChild(ToasterIdle);
 function onclick(){
       sounds[0].play();
      }
+
+function ToasterSound(){
+  sounds[1].play();
+}
 
     let elapsed = 0.0;
     // Tell our application's ticker to run a new callback every frame, passing
