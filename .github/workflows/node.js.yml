@@ -29,7 +29,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Use Node.js v16.13.1
-      - uses: actions/setup-node@v3
+        uses: actions/setup-node@v3
         with:
           node-version: 16.13.1
           cache: 'npm'
