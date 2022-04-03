@@ -1,11 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import * as PIXI from 'pixi.js'
 import { htmlaudio, Sound, sound , SoundLibrary } from '@pixi/sound'
-import { Sprite } from "pixi.js";
-
-//Step:1
-//ToDo: Implement a interactable object
-// ToDo: implement custom background
+import { DisplayObject, Sprite } from "pixi.js";
 
 // Step2
 // ToDo: Animate Object
@@ -29,7 +25,6 @@ function backgroundAlignment(spriteSize:Sprite, windowSize: Window ){
   }
 }
 
-
 export abstract class Actor extends PIXI.Graphics {
 
 }
@@ -38,9 +33,6 @@ const sounds:any [] = [
   sound.add('woop','../assets/sound/build1soundTest_01.mp3' )
 ]
 
-class Background extends Actor {
-  hello:any;
-};
 
 @Component({
   selector: 'catakiller-root',
@@ -61,17 +53,49 @@ export class AppComponent {
     console.log(window.innerHeight, window.innerWidth)
     document.body.appendChild(this.app.view);
     PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
-    const texture = PIXI.Texture.from('../assets/backgrounds/CuisineV1.jpg');
-    const sprite1 = new PIXI.Sprite(texture);
-    //define ratio
+
+    const texture1 = PIXI.Texture.from('../assets/backgrounds/CuisineV1.jpg');
+    const texture2 = PIXI.Texture.from('../assets/catanimation/Animation-Waldo.gif');
+    const toasterIdle = PIXI.Texture.from('../assets/things/toaster/idle/grille_pain.png');
+
+
+    const sprite1 = new PIXI.Sprite(texture1);
+    const cat = new PIXI.Sprite(texture2);
+    const ToasterIdle= new PIXI.Sprite(toasterIdle);
+    const catC = new PIXI.Container();
+    const toasterI= new PIXI.Container();
     backgroundAlignment(sprite1,window)
-    sprite1.interactive= true;
-    sprite1.buttonMode = true;
-    sprite1.on('pointerdown', onclick );
+
+    catC.interactive= true;
+    catC.buttonMode = true;
+    catC.on('pointerdown', onclick );
+    this.app.stage.addChild(catC);
+
     this.app.stage.addChild(sprite1);
 
-     function onclick(){
+    toasterI.interactive = true;
+    toasterI.buttonMode =true;
+    toasterI.on('pointerdown', onclick)
+    this.app.stage.addChild(toasterI)
+
+this.app.stage.addChild(catC);
+catC.addChild(cat);
+toasterI.addChild(ToasterIdle);
+
+function onclick(){
       sounds[0].play();
      }
+
+    let elapsed = 0.0;
+    // Tell our application's ticker to run a new callback every frame, passing
+    // in the amount of time that has passed since the last tick
+    this.app.ticker.add((delta) => {
+      // Add the time to our total elapsed time
+      elapsed += delta;
+      // Update the sprite's X position based on the cosine of our elapsed time.  We divide
+      // by 50 to slow the animation down a bit...
+      catC.x = 100.0 + Math.cos(elapsed/50.0) * 100.0;
+      catC.y = window.innerHeight*0.6 + Math.sin(elapsed/50)*50
+    });
   }
 }

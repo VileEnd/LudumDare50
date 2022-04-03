@@ -5,7 +5,11 @@
     "types": [],
     "target": "ES2017"
   },
-  "files": ["src/main.ts", "src/polyfills.ts"],
+  "files": [
+    "src/main.ts",
+    "src/polyfills.ts",
+    "../../node_modules/@types/node/buffer.d.ts"
+  ],
   "include": ["src/**/*.d.ts"],
   "exclude": ["**/*.test.ts", "**/*.spec.ts"]
 }
