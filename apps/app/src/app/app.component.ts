@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import * as PIXI from 'pixi.js'
 import { htmlaudio, Sound, sound , SoundLibrary } from '@pixi/sound'
+import { Sprite } from "pixi.js";
 
 //Step:1
 //ToDo: Implement a interactable object
@@ -8,6 +9,25 @@ import { htmlaudio, Sound, sound , SoundLibrary } from '@pixi/sound'
 
 // Step2
 // ToDo: Animate Object
+
+function backgroundAlignment(spriteSize:Sprite, windowSize: Window ){
+
+  const imageRatio = spriteSize.width/ spriteSize.height;
+  const windowRatio = windowSize.innerWidth/windowSize.innerHeight;
+  if(imageRatio > windowRatio) {
+    spriteSize.height = spriteSize.height / (spriteSize.width / windowSize.innerWidth);
+    spriteSize.width = windowSize.innerWidth;
+    spriteSize.position.x = 0;
+    spriteSize.position.y = (windowSize.innerHeight - spriteSize.height) / 2;
+    console.log(`${ spriteSize.height} image>Window ${ spriteSize.width}`)
+  }else{
+    spriteSize.width =  windowSize.innerWidth;
+    spriteSize.height = windowSize.innerHeight;
+    spriteSize.position.y = 0;
+    spriteSize.position.x = (windowSize.innerWidth - spriteSize.width) / 2;
+    console.log(`${ spriteSize.height} window> Image ${ spriteSize.width}`)
+  }
+}
 
 
 export abstract class Actor extends PIXI.Graphics {
@@ -19,7 +39,7 @@ const sounds:any [] = [
 ]
 
 class Background extends Actor {
-hello:any;
+  hello:any;
 };
 
 @Component({
@@ -38,17 +58,31 @@ export class AppComponent {
   private actor: Actor[]=[];
 
   ngOnInit(): void {
+    console.log(window.innerHeight, window.innerWidth)
     document.body.appendChild(this.app.view);
-    this.actor.push(new Background());
     PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
-    const texture = PIXI.Texture.from('../assets/testdawg.png');
+    const texture = PIXI.Texture.from('../assets/CuisineV1.jpg');
     const sprite1 = new PIXI.Sprite(texture);
-    sprite1.anchor.set(0.4);
-    sprite1._height= window.innerHeight
-    sprite1._width= window.innerWidth
-     sprite1.x = screen.width/4;
-     sprite1.y = screen.height/4 ;
-    //this.app.ticker.add((delta)=> sprite1.rotation += 0.05 *delta);
+    //define ratio
+
+backgroundAlignment(sprite1,window)
+
+    // if(imageRatio > windowRatio) {
+    //   sprite1.height = sprite1.height / (sprite1.width / window.innerWidth);
+    //   sprite1.width = window.innerWidth;
+    //   sprite1.position.x = 0;
+    //   sprite1.position.y = (window.innerHeight - sprite1.height) / 2;
+    //   console.log("tst",'${sprite1.height, sprite1.position}')
+    // }else{
+    //   sprite1.width =  window.innerWidth;
+    //   sprite1.height = window.innerHeight;
+    //   sprite1.position.y = 0;
+    //   sprite1.position.x = (window.innerWidth - sprite1.width) / 2;
+    //   console.log(`${ sprite1.height} noo ${ sprite1.width}`)
+    // }
+    //
+
+
     sprite1.interactive= true;
     sprite1.buttonMode = true;
     sprite1.on('pointerdown', onclick );
