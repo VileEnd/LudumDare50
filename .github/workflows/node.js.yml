@@ -21,6 +21,12 @@ jobs:
           node-version: '16'
       - run: npm install
       - run: npx nx affected --target=build --parallel=3
+      - name: Deploy to Cloudflare Workers with Wrangler
+        uses: cloudflare/wrangler-action@1.2.0
+        with:
+          apiKey: ${{ secrets.CF_API_KEY }}
+          email: ${{ secrets.CF_EMAIL }}
+
   pr:
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'pull_request' }}
