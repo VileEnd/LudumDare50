@@ -22,10 +22,9 @@ jobs:
       - run: npm install
       - run: npx nx affected --target=build --parallel=3
       - name: Deploy to Cloudflare Workers with Wrangler
-        steps:
-          uses: cloudflare/wrangler-action@1.2.0
-          with:
-            apiToken: ${{ secrets.CF_API_KEY }}
+        uses: cloudflare/wrangler-action@1.2.0
+        with:
+          apiToken: ${{ secrets.CF_API_KEY }}
 
   pr:
     runs-on: ubuntu-latest
