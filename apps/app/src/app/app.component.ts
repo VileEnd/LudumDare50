@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import * as PIXI from 'pixi.js'
-import { htmlaudio, sound } from '@pixi/sound'
+import { htmlaudio, Sound, sound , SoundLibrary } from '@pixi/sound'
 
 //Step:1
 //ToDo: Implement a interactable object
@@ -8,12 +8,15 @@ import { htmlaudio, sound } from '@pixi/sound'
 
 // Step2
 // ToDo: Animate Object
-// ToDo: implement Sound
+
 
 export abstract class Actor extends PIXI.Graphics {
 
 }
 
+const sounds:any [] = [
+  sound.add('woop','../assets/sound/build1soundTest_01.mp3' )
+]
 
 class Background extends Actor {
 hello:any;
@@ -37,22 +40,22 @@ export class AppComponent {
   ngOnInit(): void {
     document.body.appendChild(this.app.view);
     this.actor.push(new Background());
-    // const bg =  PIXI.Texture.fromLoader("../assets/",'../assets/')
+    PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
     const texture = PIXI.Texture.from('../assets/testdawg.png');
     const sprite1 = new PIXI.Sprite(texture);
-    sprite1.anchor.set(0.5);
+    sprite1.anchor.set(0.4);
     sprite1._height= window.innerHeight
     sprite1._width= window.innerWidth
-     sprite1.x = screen.width;
-     sprite1.y = screen.height ;
+     sprite1.x = screen.width/4;
+     sprite1.y = screen.height/4 ;
     //this.app.ticker.add((delta)=> sprite1.rotation += 0.05 *delta);
     sprite1.interactive= true;
     sprite1.buttonMode = true;
-    sprite1.on('pointerDown', onclick );
+    sprite1.on('pointerdown', onclick );
     this.app.stage.addChild(sprite1);
 
      function onclick(){
-       sprite1.scale.x *= 1.25;
+      sounds[0].play();
      }
   }
 }
