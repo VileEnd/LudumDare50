@@ -19,6 +19,7 @@
     "@angular/platform-browser": "~13.2.0",
     "@angular/platform-browser-dynamic": "~13.2.0",
     "@angular/router": "~13.2.0",
+    "@cloudflare/wrangler": "^1.19.11",
     "@nrwl/angular": "13.9.6",
     "@pixi/sound": "^4.2.0",
     "pixi.js": "^6.3.0",
