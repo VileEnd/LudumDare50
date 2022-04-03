@@ -1,0 +1,12 @@
+name = "catakiller"
+type = "webpack"
+account_id="84ed7a3883fa39fb0197bb34389b31e4"
+route = 'moyjak.com/*'
+zone_id = 'd58d4cd5f04aa75599f11795072ff40f'
+usage_model = ''
+compatibility_flags = []
+workers_dev = true
+compatibility_date = "2022-04-03"
+
+[site]
+bucket="./dist/apps/app/"
