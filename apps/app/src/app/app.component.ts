@@ -1,39 +1,57 @@
 import { Component, OnInit } from '@angular/core';
 import * as PIXI from 'pixi.js'
-import { htmlaudio, Sound, sound , SoundLibrary } from '@pixi/sound'
+import { htmlaudio, Sound, sound, SoundLibrary } from '@pixi/sound'
 import { DisplayObject, Sprite } from "pixi.js";
 
 // Step2
 // ToDo: Animate Object
 
-function backgroundAlignment(spriteSize:Sprite, windowSize: Window ){
+const sounds = [
+  sound.add('woop','../assets/sound/build1soundTest_01.mp3' ),
+  sound.add('toaster-start','../assets/sound/toaster-start(short)_01.mp3')
+]
 
-  const imageRatio = spriteSize.width/ spriteSize.height;
-  const windowRatio = windowSize.innerWidth/windowSize.innerHeight;
-  if(imageRatio > windowRatio) {
+const images = [
+  { name: "background", url: "../assets/backgrounds/CuisineV1.jpg" },
+  { name: "Waldo", url: "../assets/catanimation/Animation-Waldo.gif" },
+  { name: "toasterIdle", url: "../assets/things/toaster/idle/grille_pain.png" }
+]
+
+//Global variables
+let app: PIXI.Application;
+let stage: PIXI.Container;
+let elapsedTime = 0.0;
+//Cat-stuff
+let cat: PIXI.Container;
+//Toaster-stuff
+let toaster: PIXI.Container;
+//Current game state, could be : handleMainMenu, handlePlay, handleGameOver
+let gameState = handleMainMenu;
+//Constants : Do not change unless you like refacto
+const resources = PIXI.Loader.shared.resources
+
+function backgroundAlignment(spriteSize: Sprite, windowSize: Window) {
+
+  const imageRatio = spriteSize.width / spriteSize.height;
+  const windowRatio = windowSize.innerWidth / windowSize.innerHeight;
+  if (imageRatio > windowRatio) {
     spriteSize.height = spriteSize.height / (spriteSize.width / windowSize.innerWidth);
     spriteSize.width = windowSize.innerWidth;
     spriteSize.position.x = 0;
     spriteSize.position.y = (windowSize.innerHeight - spriteSize.height) / 2;
-    console.log(`${ spriteSize.height} image>Window ${ spriteSize.width}`)
-  }else{
-    spriteSize.width =  windowSize.innerWidth;
+    console.log(`${spriteSize.height} image>Window ${spriteSize.width}`)
+  } else {
+    spriteSize.width = windowSize.innerWidth;
     spriteSize.height = windowSize.innerHeight;
     spriteSize.position.y = 0;
     spriteSize.position.x = (windowSize.innerWidth - spriteSize.width) / 2;
-    console.log(`${ spriteSize.height} window> Image ${ spriteSize.width}`)
+    console.log(`${spriteSize.height} window> Image ${spriteSize.width}`)
   }
 }
 
 export abstract class Actor extends PIXI.Graphics {
 
 }
-
-const sounds:any [] = [
-  sound.add('woop','../assets/sound/build1soundTest_01.mp3' ),
-  sound.add('toaster-start','../assets/sound/toaster-start(short)_01.mp3')
-]
-
 
 @Component({
   selector: 'catakiller-root',
@@ -45,62 +63,98 @@ export class AppComponent {
   private app: PIXI.Application = new PIXI.Application({
     width: window.innerWidth,
     height: window.innerHeight,
-    antialias:true,
+    antialias: true,
   });
 
-  private actor: Actor[]=[];
+  private actor: Actor[] = [];
 
   ngOnInit(): void {
     console.log(window.innerHeight, window.innerWidth)
     document.body.appendChild(this.app.view);
     PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
+    app = this.app
+    stage = this.app.stage
 
-    const texture1 = PIXI.Texture.from('../assets/backgrounds/CuisineV1.jpg');
-    const texture2 = PIXI.Texture.from('../assets/catanimation/Animation-Waldo.gif');
-    const toasterIdle = PIXI.Texture.from('../assets/things/toaster/idle/grille_pain.png');
-
-
-    const sprite1 = new PIXI.Sprite(texture1);
-    const cat = new PIXI.Sprite(texture2);
-    const ToasterIdle= new PIXI.Sprite(toasterIdle);
-    const catC = new PIXI.Container();
-    const toasterI= new PIXI.Container();
-    backgroundAlignment(sprite1,window)
-
-    catC.interactive= true;
-    catC.buttonMode = true;
-    catC.on('pointerdown', onclick );
-    this.app.stage.addChild(catC);
-
-    this.app.stage.addChild(sprite1);
-
-    toasterI.interactive = true;
-    toasterI.buttonMode =true;
-    toasterI.on('pointerdown', ToasterSound)
-    this.app.stage.addChild(toasterI)
-
-this.app.stage.addChild(catC);
-catC.addChild(cat);
-toasterI.addChild(ToasterIdle);
-
-function onclick(){
-      sounds[0].play();
-     }
-
-function ToasterSound(){
-  sounds[1].play();
+    //Using loader to cache and use pixie stuff
+    PIXI.Loader.shared
+      .add(images)
+      .load(setup)
+  };
 }
 
-    let elapsed = 0.0;
-    // Tell our application's ticker to run a new callback every frame, passing
-    // in the amount of time that has passed since the last tick
-    this.app.ticker.add((delta) => {
-      // Add the time to our total elapsed time
-      elapsed += delta;
-      // Update the sprite's X position based on the cosine of our elapsed time.  We divide
-      // by 50 to slow the animation down a bit...
-      catC.x = 100.0 + Math.cos(elapsed/50.0) * 100.0;
-      catC.y = window.innerHeight*0.6 + Math.sin(elapsed/50)*50
-    });
+function setup() {
+  const backgroundSprite = new PIXI.Sprite(resources['background'].texture);
+  const catTexture = new PIXI.Sprite(resources['Waldo'].texture);
+  const toasterIdle = new PIXI.Sprite(resources['toasterIdle'].texture);
+  backgroundAlignment(backgroundSprite, window)
+  stage.addChild(backgroundSprite);
+
+  //Setting cat
+  cat = new PIXI.Container();
+  catTexture.interactive = true;
+  cat.buttonMode = true;
+  catTexture.on('pointerdown', playSoundFunction('woop'))
+  cat.addChild(catTexture);
+
+  //Setting toaster
+  toaster = new PIXI.Container();
+  toasterIdle.interactive = true;
+  toaster.buttonMode = true;
+  toasterIdle.on('pointerdown', playSoundFunction("toaster-start"))
+  toaster.addChild(toasterIdle);
+
+  //Actually starts the game by running gameLoop function.
+  app.ticker.add((delta: number) => gameLoop(delta));
+}
+
+//Used to handle "scene" : MainMenu, Play
+function gameLoop(delta: number) {
+  elapsedTime += delta
+  //gameStats is an alias for the current game state to run the correct function depending on... Well the state of the game.
+  //It can be : handleMainMenu, handlePlay, handleGameOver
+  gameState(delta);
+}
+
+function handleMainMenu(delta: number) {
+  let isDisplayed = false;
+  const testMessage = new PIXI.Text("Welcome ! o/", { align: 'center' });
+  testMessage.position.set(400, 10)
+  if (!isDisplayed) {
+    stage.addChild(testMessage)
+    isDisplayed = true;
+  }
+
+  //console.log(elapsedTime)
+
+  if (elapsedTime > 100) {
+    stage.removeChild(testMessage)
+    gameState = initPlay
   }
 }
+
+//Used to display things on start
+function initPlay() {
+
+  gameState = handlePlay;
+  stage.addChild(cat);
+  stage.addChild(toaster);
+}
+
+//Used as main game loop
+function handlePlay(delta: number) {
+  // Update the sprite's X position based on the cosine of our elapsed time.  We divide
+  // by 50 to slow the animation down a bit...
+  cat.x = 100.0 + Math.cos(elapsedTime / 50.0) * 100.0;
+  cat.y = window.innerHeight * 0.6 + Math.sin(elapsedTime / 50) * 50
+}
+
+//Used to handle *?guess what?*
+function handleGameOver(delta: number) {
+  //testMessage.text = "CAT DED, GAMEOV3R"
+}
+
+
+function playSoundFunction(soundName : string){
+  return function(){sound.play(soundName);}
+}
+
