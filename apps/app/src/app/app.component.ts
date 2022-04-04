@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import * as PIXI from 'pixi.js'
 import { htmlaudio, Sound, sound, SoundLibrary } from '@pixi/sound'
 import { DisplayObject, Sprite, Texture, Ticker } from "pixi.js";
+import { isIdentifier } from '@angular/compiler';
 
 // Step2
 // ToDo: Animate Object
@@ -49,6 +50,7 @@ let toaster: PIXI.Container;
 let toasterAnimationSpeed = 0.05;
 let toasterStartPositionX = 100;
 let toasterStartPositionY = 300;
+const toasterTimeToExplodeMs = 2000;
 //Current game state, could be : handleMainMenu, handlePlay, handleGameOver
 let gameState = handleMainMenu;
 //Constants : Do not change unless you like refacto
@@ -132,10 +134,11 @@ function setup() {
 
 //Used to handle "scene" : MainMenu, Play
 function gameLoop(delta: number) {
+
   elapsedTime += Ticker.shared.deltaMS
   //gameStats is an alias for the current game state to run the correct function depending on... Well the state of the game.
   //It can be : handleMainMenu, handlePlay, handleGameOver
-  gameState(delta);
+  gameState(Ticker.shared.deltaMS);
 }
 
 const message = new PIXI.Text("Welcome ! o/", { align: 'center' });
@@ -169,6 +172,7 @@ function initPlay() {
 //Used as main game loop
 function handlePlay(delta: number) {
   updateCat(delta)
+  updateToaster(delta)
   checkForCollisions(delta)
 }
 
@@ -271,52 +275,60 @@ function updateCat(delta: number) {
     cat.scale.x = 1;
   }
 
-  if (Cat.isCatOnCooldown && (elapsedTime - (Cat.lastEventTimestampMs + catDelayAfterEventMs) > 0)) {
-    Cat.endCatCooldown();
+  if (Cat.isVisible) {
+    Cat.elapsedTimeSinceEventMs += delta
   }
 }
 
 
 abstract class Cat {
   static isVisible: boolean = true;
-  static isCatOnCooldown: boolean = false;
-  static lastEventTimestampMs: number;
+  static elapsedTimeSinceEventMs: number;
   static speed: number = catSpeed;
 
   //Random % chance to trigger an event
   static doesTriggers() {
     //if cat is busy (not visible), should return false !
-    const doesCatsTriggers: boolean = Cat.isVisible && !Cat.isCatOnCooldown && Math.random() * 100 < catTriggerChancePercent;
-    console.log("Does cat triggers ? " + doesCatsTriggers)
+    const doesCatsTriggers: boolean = Cat.isCatVisible() && !Cat.isCatOnCooldown() && Math.random() * 100 < catTriggerChancePercent;
+    console.log("So, does cat triggers ? " + doesCatsTriggers)
     return doesCatsTriggers;
   }
 
-  static endCatCooldown() {
-    Cat.isCatOnCooldown = false;
+  static isCatVisible() {
+    console.log("is cat visible ?" + Cat.isVisible);
+    return Cat.isVisible
   }
 
-  static setCatOnCooldown() {
-    Cat.isCatOnCooldown = true;
-    Cat.lastEventTimestampMs = elapsedTime;
+  static isCatOnCooldown() {
+    console.log("Elapsed time ?" + Cat.elapsedTimeSinceEventMs)
+    return Cat.elapsedTimeSinceEventMs > catDelayAfterEventMs;
   }
 
   static switchVisibilityTo(isVisible: boolean) {
     //Changes the visibility of the cat container first
     cat.visible = isVisible;
     Cat.isVisible = isVisible
-    //If it's set visible to true :  it means an event happened => So, we add a cooldown to cat triggering events. Else => Stop the cat from moving.
+    //Stop it from moving while not visible, resume otherwise.
     if (isVisible) {
-      Cat.setCatOnCooldown();
-      Cat.speed = 1;
+      Cat.speed = catSpeed;
     } else {
       Cat.speed = 0;
     }
+
   }
 }
 
 
 
 // --------------------- Toaster stuff ------------------------- //
+function updateToaster(delta: number) {
+  if (Toaster.isTriggered) {
+    Toaster.elapsedTriggeredTimeMs += delta
+    if (Toaster.elapsedTriggeredTimeMs >= Toaster.timeToExplose) {
+      Toaster.explode();
+    }
+  }
+}
 
 function onToasterClick() {
   if (Toaster.isTriggered) {
@@ -330,6 +342,8 @@ function onToasterClick() {
 //Why use singletons when you can have a freaking static class 
 abstract class Toaster {
   static isTriggered: boolean = false;
+  static elapsedTriggeredTimeMs: number = 0;
+  static timeToExplose: number = toasterTimeToExplodeMs;
 
   static triggerToaster() {
     Cat.switchVisibilityTo(false);
@@ -344,6 +358,13 @@ abstract class Toaster {
     toaster.removeChildren(0)
     toaster.addChild(new PIXI.Sprite(resources['toasterIdle'].texture));
     Toaster.isTriggered = false;
+    Toaster.elapsedTriggeredTimeMs = 0;
+  }
+
+  static explode() {
+    Cat.switchVisibilityTo(false);
+    console.log("boom, RIP the cat (animation coming soon)");
+    gameState = handleGameOver;
   }
 }
 
