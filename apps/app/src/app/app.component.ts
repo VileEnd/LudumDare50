@@ -22,11 +22,18 @@ const catWalkingFrames = [
   Texture.from("../assets/catanimation/Walk2.png")
 ];
 
+const toasterTriggeredFrames = [
+  Texture.from("../assets/things/toaster/triggered/Pict1.png"),
+  Texture.from("../assets/things/toaster/triggered/Pict2.png")
+];
+
 //Global variables
 let app: PIXI.Application;
 let stage: PIXI.Container;
 let elapsedTime = 0.0;
 let firstScreenPauseTimeNotInMs = 100;
+const messagePositionX = 400;
+const messagePositionY = 10;
 //Cat-stuff
 let cat: PIXI.Container;
 let catAnimationSpeed = 0.05;
@@ -37,6 +44,7 @@ let catMinWalkLimitX = 500
 let catSpeed = 1;
 //Toaster-stuff
 let toaster: PIXI.Container;
+let toasterAnimationSpeed = 0.05;
 let toasterStartPositionX = 100;
 let toasterStartPositionY = 300;
 //Current game state, could be : handleMainMenu, handlePlay, handleGameOver
@@ -133,7 +141,7 @@ const message = new PIXI.Text("Welcome ! o/", { align: 'center' });
 let isDisplayed = false;
 function handleMainMenu(delta: number) {
   if (!isDisplayed) {
-    message.position.set(400, 10)
+    message.position.set(messagePositionX, messagePositionY)
     stage.addChild(message)
     isDisplayed = true;
   }
@@ -170,7 +178,8 @@ function handleGameOver(delta: number) {
 
 function checkForCollisions(delta: number) {
   if (isRectangleColliding(cat, toaster)) {
-    gameState = handleGameOver
+    triggerToaster()
+    //gameState = handleGameOver
   }
 }
 
@@ -246,7 +255,7 @@ function isRectangleColliding(r1: any, r2: any) {
 };
 
 
-// --------------------- Cat controller ------------------------- //
+// --------------------- Cat stuff ------------------------- //
 function updateCat(delta: number) {
   cat.x += catSpeed;
 
@@ -259,5 +268,19 @@ function updateCat(delta: number) {
   } else {
     cat.scale.x = 1;
   }
+}
+
+function switchVisibilityCatAnimation(isVisible: boolean) {
+  cat.visible = isVisible;
+  catSpeed = 0;
+}
+
+
+// --------------------- Toaster stuff ------------------------- //
+function triggerToaster() {
+  switchVisibilityCatAnimation(false);
+  const toasterTriggeredAnimation = createAnimation(toasterTriggeredFrames, toasterAnimationSpeed)
+  toaster.removeChildren(0)
+  toaster.addChild(toasterTriggeredAnimation)
 }
 
