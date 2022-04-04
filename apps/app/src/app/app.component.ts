@@ -29,6 +29,11 @@ let elapsedTime = 0.0;
 //Cat-stuff
 let cat: PIXI.Container;
 let catAnimationSpeed = 0.05;
+let catStartPositionX = 800;
+let catStartPositionY = 600;
+let catMaxWalkLimitX = 1500
+let catMinWalkLimitX = 500
+let catSpeed = 1;
 //Toaster-stuff
 let toaster: PIXI.Container;
 //Current game state, could be : handleMainMenu, handlePlay, handleGameOver
@@ -142,14 +147,15 @@ function initPlay() {
 
   gameState = handlePlay;
   stage.addChild(cat);
+  cat.x = catStartPositionX;
+  cat.y = catStartPositionY;
   stage.addChild(toaster);
   app.start();
 }
 
 //Used as main game loop
 function handlePlay(delta: number) {
-  cat.x = 800;
-  cat.y = 600;
+  updateCat(delta)
   toaster.x = 100;
   toaster.y = 300;
   //cat.x = 200.0 + Math.cos(elapsedTime / 50.0) * 100.0;
@@ -161,6 +167,8 @@ function handleGameOver(delta: number) {
   //testMessage.text = "CAT DED, GAMEOV3R"
 }
 
+
+// --------------------- utils ------------------------- //
 function playSoundFunction(soundName: string) {
   return function () { sound.play(soundName); }
 }
@@ -170,5 +178,23 @@ function createAnimation(frames: Texture[], animationSpeed: number) {
   animation.animationSpeed = animationSpeed
   animation.play()
   return animation;
+}
+
+
+// --------------------- Cat controller ------------------------- //
+function updateCat(delta: number) {
+  cat.x += catSpeed;
+
+  if(cat.x > catMaxWalkLimitX || cat.x < catMinWalkLimitX){
+    catSpeed = -catSpeed
+  }
+
+  if(catSpeed > 0){
+    cat.scale.x = -1;
+  } else {
+    cat.scale.x = 1;
+  }
+   
+
 }
 
