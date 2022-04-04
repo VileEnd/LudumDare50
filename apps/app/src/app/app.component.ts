@@ -6,6 +6,8 @@ import { DisplayObject, Sprite, Texture, Ticker } from "pixi.js";
 // Step2
 // ToDo: Animate Object
 
+
+// --------------------- Sounds loading ------------------------- //
 const sounds = [
   sound.add('woop', '../assets/sound/build1soundTest_01.mp3'),
   //toaster
@@ -23,6 +25,8 @@ const sounds = [
   sound.add('carpet-chomp', '../assets/sound/carpet-chomp(short)_01.mp3')
 ]
 
+
+// --------------------- Images loading ------------------------- //
 const images = [
   { name: "background", url: "../assets/backgrounds/CuisineV1.jpg" },
   { name: "toasterIdle", url: "../assets/things/toaster/idle/grille_pain.png" },
@@ -30,9 +34,14 @@ const images = [
   { name: "carpetIdle", url: "../assets/things/rug/idle/carpet.png" }
 ]
 
+//cat
 const catWalkingFrames = [
   Texture.from("../assets/catanimation/Walk1.png"),
   Texture.from("../assets/catanimation/Walk2.png")
+];
+const catIdleFrames = [
+  Texture.from("../assets/catanimation/Idle1.png"),
+  Texture.from("../assets/catanimation/Idle2.png")
 ];
 //toaster
 const toasterTriggeredFrames = [
@@ -89,8 +98,8 @@ const catMinWalkLimitX = 500
 const catSpeed = 1;
 const catLives = 3;
 const catTriggerChancePercent = 90;
-const catDelayAfterEventMs = 3000;
-const catDelayAfterTriggerChanceMs = 1000;
+const catDelayAfterEventMs = 4000;
+const catDelayAfterTriggerOrUnTriggerChanceMs = 1000;
 //Toaster-stuff
 const toasterTriggeredAnimationSpeed = 0.05;
 const toasterFailedAnimationSpeed = 0.03;
@@ -170,9 +179,9 @@ function setup() {
   //Setting cat
   cat = new PIXI.Container();
   const catWalkAnimation = createAnimation(catWalkingFrames, catAnimationSpeed);
-  catWalkAnimation.interactive = true;
-  catWalkAnimation.buttonMode = true;
-  catWalkAnimation.on('pointerdown', playSoundFunction('woop'))
+  cat.interactive = true;
+  cat.buttonMode = true;
+  cat.on('pointerdown', playSoundFunction('woop'))
   cat.addChild(catWalkAnimation)
   //Setting toaster
   toaster = new PIXI.Container();
@@ -261,17 +270,21 @@ function handleGameOver(delta: number) {
 }
 
 function updateCat(delta: number) {
-  cat.x += Cat.speed;
+  console.log("is cat idle ? " + Cat.isIdle)
+  if (!Cat.isIdle) {
 
-  //Change  direction is is at screen bounds
-  if ((cat.x > catMaxWalkLimitX && Cat.speed > 0) || (cat.x < catMinWalkLimitX && Cat.speed < 0)) {
-    Cat.speed = -Cat.speed
-  }
+    cat.x += Cat.speed;
 
-  if (Cat.speed > 0) {
-    cat.scale.x = -1;
-  } else {
-    cat.scale.x = 1;
+    //Change  direction is is at screen bounds
+    if ((cat.x > catMaxWalkLimitX && Cat.speed > 0) || (cat.x < catMinWalkLimitX && Cat.speed < 0)) {
+      Cat.speed = -Cat.speed
+    }
+
+    if (Cat.speed > 0) {
+      cat.scale.x = -1;
+    } else {
+      cat.scale.x = 1;
+    }
   }
 
   if (Cat.isVisible) {
@@ -322,6 +335,8 @@ function checkRespawns(delta: number) {
     if (Cat.elapsedTimeSinceDeath >= respawnDelayMs) {
       Cat.respawn()
       Toaster.unTrigger();
+      Door.unTrigger();
+      Carpet.unTrigger();
     }
   }
 
@@ -402,6 +417,7 @@ function isRectangleColliding(r1: any, r2: any) {
 // --------------------- Cat stuff ------------------------- //
 abstract class Cat {
   static isVisible: boolean = true;
+  static isIdle: boolean = false;
   static elapsedTimeSinceEventMs: number = 0;
   static elapsedTimeSinceTriggerChance: number = 0;
   static speed: number = catSpeed;
@@ -412,34 +428,34 @@ abstract class Cat {
   //Random % chance to trigger an event
   static doesTriggers() {
     //if cat is busy (not visible), should return false !
-    const doesCatsTriggers: boolean = Cat.isCatVisible() && !Cat.isCatOnCooldown() && Cat.getRandomChance();
+    const doesCatsTriggers: boolean = Cat.isCatVisible() && !Cat.isCatOnCooldown() && !Cat.isCatOnEventCooldown() && Cat.getRandomChance() &&
+      !Toaster.isTriggered && !Door.isTriggered && !Carpet.isTriggered;
     console.log("So, does cat triggers ? " + doesCatsTriggers)
     return doesCatsTriggers;
   }
 
   static isCatVisible() {
-    console.log("is cat visible ?" + Cat.isVisible);
     return Cat.isVisible
   }
 
   static isCatOnCooldown() {
-    console.log("Elapsed time since last random enough ?  " + !(Cat.elapsedTimeSinceTriggerChance < catDelayAfterTriggerChanceMs))
-    return Cat.elapsedTimeSinceTriggerChance < catDelayAfterTriggerChanceMs;
+    //console.log("Elapsed time since last random enough ?  " + !(Cat.elapsedTimeSinceTriggerChance < catDelayAfterTriggerChanceMs))
+    return Cat.elapsedTimeSinceTriggerChance < catDelayAfterTriggerOrUnTriggerChanceMs;
   }
 
   static isCatOnEventCooldown() {
-    console.log("Elapsed time since event enough ? " + !(Cat.elapsedTimeSinceEventMs < catDelayAfterEventMs))
+   // console.log("Elapsed time since event enough ? " + !(Cat.elapsedTimeSinceEventMs < catDelayAfterEventMs))
     return Cat.elapsedTimeSinceEventMs < catDelayAfterEventMs;
   }
 
   static getRandomChance() {
     Cat.elapsedTimeSinceTriggerChance = 0;
     const randomChance = Math.random() * 100 < catTriggerChancePercent;
-    console.log("Random is OK ? " + randomChance)
+    //console.log("Random is OK ? " + randomChance)
     return randomChance;
   }
 
-  static triggersEvent() {
+  static resetTimeSinceEventTimer() {
     Cat.elapsedTimeSinceEventMs = 0;
   }
 
@@ -453,6 +469,20 @@ abstract class Cat {
     } else {
       Cat.speed = 0;
     }
+  }
+
+  static setIdle() {
+    const catWalkAnimation = createAnimation(catIdleFrames, catAnimationSpeed);
+    cat.removeChildren(0)
+    cat.addChild(catWalkAnimation)
+    Cat.isIdle = true;
+  }
+
+  static setWalking() {
+    Cat.isIdle = false;
+    const catWalkAnimation = createAnimation(catWalkingFrames, catAnimationSpeed);
+    cat.removeChildren(0)
+    cat.addChild(catWalkAnimation)
   }
 
   static removeLifeOrGameOver() {
@@ -493,7 +523,7 @@ abstract class Toaster {
 
   static trigger() {
     Cat.switchVisibilityTo(false);
-    Cat.triggersEvent()
+    Cat.resetTimeSinceEventTimer()
     const toasterTriggeredAnimation = createAnimation(toasterTriggeredFrames, toasterTriggeredAnimationSpeed)
     toaster.removeChildren(0)
     toaster.addChild(toasterTriggeredAnimation)
@@ -503,6 +533,7 @@ abstract class Toaster {
 
   static unTrigger() {
     Cat.switchVisibilityTo(true);
+    Cat.resetTimeSinceEventTimer()
     toaster.removeChildren(0)
     toaster.addChild(new PIXI.Sprite(resources['toasterIdle'].texture));
     Toaster.isTriggered = false;
@@ -527,8 +558,8 @@ function onDoorClick() {
   if (gameState != handleGameOver) {
     if (Door.isTriggered) {
       Door.unTrigger();
-      sound.stop("toaster-start");
-      sound.play("toaster-sorrysir");
+      sound.stop("door-start");
+      sound.play("door-sorrysir");
     }
   }
 }
@@ -538,19 +569,21 @@ abstract class Door {
   static elapsedTriggeredTimeMs: number = 0;
 
   static trigger() {
-    Cat.switchVisibilityTo(false);
-    //TODO : play cat idle animation
-    Cat.triggersEvent()
+    Cat.switchVisibilityTo(true);
+    Cat.setIdle()
+    Cat.resetTimeSinceEventTimer()
     Door.isTriggered = true;
     sound.play("door-start");
   }
 
   static unTrigger() {
     Cat.switchVisibilityTo(true);
-    //door.removeChildren(0)
-    //const doorSprite = new PIXI.Sprite(resources['doorIdle'].texture)
-    //backgroundAlignment(doorSprite, window)
-    //door.addChild(doorSprite);
+    Cat.resetTimeSinceEventTimer()
+    Cat.setWalking()
+    door.removeChildren(0)
+    const doorSprite = new PIXI.Sprite(resources['doorIdle'].texture)
+    backgroundAlignment(doorSprite, window)
+    door.addChild(doorSprite);
     Door.isTriggered = false;
     Door.elapsedTriggeredTimeMs = 0;
   }
@@ -587,13 +620,14 @@ abstract class Carpet {
 
   static trigger() {
     Cat.switchVisibilityTo(false);
-    Cat.triggersEvent()
+    Cat.resetTimeSinceEventTimer()
     Carpet.isTriggered = true;
     sound.play("carpet-scratch");
   }
 
   static unTrigger() {
     Cat.switchVisibilityTo(true);
+    Cat.resetTimeSinceEventTimer()
     carpet.removeChildren(0)
     carpet.addChild(new PIXI.Sprite(resources['carpetIdle'].texture));
     Carpet.isTriggered = false;
