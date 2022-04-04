@@ -26,6 +26,7 @@ const catWalkingFrames = [
 let app: PIXI.Application;
 let stage: PIXI.Container;
 let elapsedTime = 0.0;
+let firstScreenPauseTimeNotInMs = 100;
 //Cat-stuff
 let cat: PIXI.Container;
 let catAnimationSpeed = 0.05;
@@ -108,9 +109,10 @@ function setup() {
 
   //Setting toaster
   toaster = new PIXI.Container();
-  //toasterIdle.interactive = true;
-  //toaster.buttonMode = true;
-  //toasterIdle.on('pointerdown', playSoundFunction("toaster-start"))
+  toaster.interactive = true;
+  toaster.buttonMode = true;
+  toaster.on('pointerdown', playSoundFunction("toaster-start"))
+  toaster.hitArea = new PIXI.Rectangle(0, 400, 400, 200);
   toaster.addChild(toasterIdle);
 
   //Actually starts the game by running gameLoop function.
@@ -125,19 +127,17 @@ function gameLoop(delta: number) {
   gameState(delta);
 }
 
+const welcomeMessage = new PIXI.Text("Welcome ! o/", { align: 'center' });
+let isDisplayed = false;
 function handleMainMenu(delta: number) {
-  let isDisplayed = false;
-  const testMessage = new PIXI.Text("Welcome ! o/", { align: 'center' });
-  testMessage.position.set(400, 10)
   if (!isDisplayed) {
-    stage.addChild(testMessage)
+    welcomeMessage.position.set(400, 10)
+    stage.addChild(welcomeMessage)
     isDisplayed = true;
   }
 
-  //console.log(elapsedTime)
-
-  if (elapsedTime > 100) {
-    stage.removeChild(testMessage)
+  if (elapsedTime > firstScreenPauseTimeNotInMs) {
+    welcomeMessage?.destroy()
     gameState = initPlay
   }
 }
@@ -194,7 +194,5 @@ function updateCat(delta: number) {
   } else {
     cat.scale.x = 1;
   }
-   
-
 }
 
