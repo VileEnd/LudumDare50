@@ -25,7 +25,6 @@ const sounds = [
   sound.add('carpet-chomp', '../assets/sound/carpet-chomp(short)_01.mp3')
 ]
 
-
 // --------------------- Images loading ------------------------- //
 const images = [
   { name: "background", url: "../assets/backgrounds/CuisineV1.jpg" },
@@ -33,7 +32,6 @@ const images = [
   { name: "doorIdle", url: "../assets/things/door/idle.png" },
   { name: "carpetIdle", url: "../assets/things/rug/idle/carpet.png" }
 ]
-
 //cat
 const catWalkingFrames = [
   Texture.from("../assets/catanimation/Walk1.png"),
@@ -61,15 +59,14 @@ const doorFailedFrames = [
 ];
 //carpet
 const carpetTriggeredFrames = [
-  Texture.from("../assets/things/toaster/triggered/Pict1.png"),
-  Texture.from("../assets/things/toaster/triggered/Pict2.png")
+  Texture.from("../assets/things/rug/triggered/Pict1.png"),
+  Texture.from("../assets/things/rug/triggered/Pict2.png")
 ];
 const carpetFailedFrames = [
-  Texture.from("../assets/things/toaster/failed/1.png"),
-  Texture.from("../assets/things/toaster/failed/2.png"),
-  Texture.from("../assets/things/toaster/failed/3.png")
+  Texture.from("../assets/things/rug/failed/1.png"),
+  Texture.from("../assets/things/rug/failed/2.png"),
+  Texture.from("../assets/things/rug/failed/3.png")
 ]
-
 
 //---- Global variables
 let app: PIXI.Application;
@@ -107,7 +104,7 @@ const toasterStartPositionX = 100;
 const toasterStartPositionY = 300;
 const toasterTimeToFailMs = 2000;
 //Door-stuff
-const doorTriggeredAnimationSpeed = 0.05;
+const doorTriggeredAnimationSpeed = 0.05; // No animation for the door
 const doorFailedAnimationSpeed = 0.03;
 const doorStartPositionX = -0;
 const doorStartPositionY = 0;
@@ -116,7 +113,7 @@ const doorTimeToFailMs = 4000;
 const carpetTriggeredAnimationSpeed = 0.05;
 const carpetFailedAnimationSpeed = 0.03;
 const carpetStartPositionX = 500;
-const carpetStartPositionY = 500;
+const carpetStartPositionY = 440;
 const carpetTimeToFailMs = 2000;
 //Do not change unless you like refacto
 const resources = PIXI.Loader.shared.resources
@@ -176,8 +173,10 @@ function setup() {
   backgroundAlignment(backgroundSprite, window)
   stage.addChild(backgroundSprite);
 
+  stage.sortableChildren = true
   //Setting cat
   cat = new PIXI.Container();
+  cat.zIndex = 1;
   const catWalkAnimation = createAnimation(catWalkingFrames, catAnimationSpeed);
   cat.interactive = true;
   cat.buttonMode = true;
@@ -185,6 +184,7 @@ function setup() {
   cat.addChild(catWalkAnimation)
   //Setting toaster
   toaster = new PIXI.Container();
+  toaster.zIndex = 2;
   toaster.interactive = true;
   toaster.buttonMode = true;
   toaster.on('pointerdown', onToasterClick)
@@ -204,8 +204,11 @@ function setup() {
   carpet.interactive = true;
   carpet.buttonMode = true;
   carpet.on('pointerdown', onCarpetClick)
-  carpet.hitArea = new PIXI.Rectangle(0, 400, 400, 200); //ChangeMe
-  carpet.addChild(new PIXI.Sprite(resources['carpetIdle'].texture));
+  carpet.hitArea = new PIXI.Rectangle(100, 360, 700, 150); //ChangeMe
+  const carpetSprite = new PIXI.Sprite(resources['carpetIdle'].texture)
+  backgroundAlignment(carpetSprite, window)
+  carpetSprite.scale.set(0.35, 0.35)
+  carpet.addChild(carpetSprite);
 
   //Actually starts the game by running gameLoop function.
   app.ticker.add((delta: number) => gameLoop(delta));
@@ -251,6 +254,7 @@ function initPlay() {
   stage.addChild(door);
   carpet.x = carpetStartPositionX;
   carpet.y = carpetStartPositionY;
+  stage.addChild(carpet);
   app.start();
 }
 
@@ -270,7 +274,6 @@ function handleGameOver(delta: number) {
 }
 
 function updateCat(delta: number) {
-  console.log("is cat idle ? " + Cat.isIdle)
   if (!Cat.isIdle) {
 
     cat.x += Cat.speed;
@@ -326,6 +329,9 @@ function checkForCollisions(delta: number) {
   }
   if (isRectangleColliding(cat, door) && Cat.doesTriggers()) {
     Door.trigger()
+  }
+  if (isRectangleColliding(cat, carpet) && Cat.doesTriggers()) {
+    Carpet.trigger()
   }
 }
 
@@ -430,7 +436,7 @@ abstract class Cat {
     //if cat is busy (not visible), should return false !
     const doesCatsTriggers: boolean = Cat.isCatVisible() && !Cat.isCatOnCooldown() && !Cat.isCatOnEventCooldown() && Cat.getRandomChance() &&
       !Toaster.isTriggered && !Door.isTriggered && !Carpet.isTriggered;
-    console.log("So, does cat triggers ? " + doesCatsTriggers)
+    //console.log("So, does cat triggers ? " + doesCatsTriggers)
     return doesCatsTriggers;
   }
 
@@ -444,7 +450,7 @@ abstract class Cat {
   }
 
   static isCatOnEventCooldown() {
-   // console.log("Elapsed time since event enough ? " + !(Cat.elapsedTimeSinceEventMs < catDelayAfterEventMs))
+    // console.log("Elapsed time since event enough ? " + !(Cat.elapsedTimeSinceEventMs < catDelayAfterEventMs))
     return Cat.elapsedTimeSinceEventMs < catDelayAfterEventMs;
   }
 
@@ -607,9 +613,9 @@ function onCarpetClick() {
   if (gameState != handleGameOver) {
     if (Carpet.isTriggered) {
       Carpet.unTrigger();
-      sound.stop("carpet-fuse");
-      sound.play("carpet-psch");
-    }
+      sound.stop("carpet-scratch");
+      sound.play("carpet-shh");
+    } 
   }
 }
 
@@ -621,6 +627,11 @@ abstract class Carpet {
   static trigger() {
     Cat.switchVisibilityTo(false);
     Cat.resetTimeSinceEventTimer()
+    const carpetTriggeredAnimation = createAnimation(carpetTriggeredFrames, carpetTriggeredAnimationSpeed)
+    carpet.removeChildren(0)
+    backgroundAlignment(carpetTriggeredAnimation, window)
+    carpetTriggeredAnimation.scale.set(0.35, 0.35)
+    carpet.addChild(carpetTriggeredAnimation)
     Carpet.isTriggered = true;
     sound.play("carpet-scratch");
   }
@@ -629,17 +640,22 @@ abstract class Carpet {
     Cat.switchVisibilityTo(true);
     Cat.resetTimeSinceEventTimer()
     carpet.removeChildren(0)
-    carpet.addChild(new PIXI.Sprite(resources['carpetIdle'].texture));
+    const carpetSprite = new PIXI.Sprite(resources['carpetIdle'].texture)
+    backgroundAlignment(carpetSprite, window)
+    carpetSprite.scale.set(0.35, 0.35)
+    carpet.addChild(carpetSprite);
     Carpet.isTriggered = false;
     Carpet.elapsedTriggeredTimeMs = 0;
   }
 
   static fail() {
     Cat.switchVisibilityTo(false);
-    const carpetTriggeredAnimation = createAnimation(carpetFailedFrames, carpetFailedAnimationSpeed)
+    const carpetFailedAnimation = createAnimation(carpetFailedFrames, carpetFailedAnimationSpeed)
     carpet.removeChildren(0)
-    carpetTriggeredAnimation.loop = false;
-    carpet.addChild(carpetTriggeredAnimation)
+    backgroundAlignment(carpetFailedAnimation, window)
+    carpetFailedAnimation.scale.set(0.35, 0.35)
+    carpetFailedAnimation.loop = false;
+    carpet.addChild(carpetFailedAnimation)
     Carpet.isTriggered = false;
     Cat.removeLifeOrGameOver();
     sound.stop("carpet-scratch");
