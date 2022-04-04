@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import * as PIXI from 'pixi.js'
 import { htmlaudio, Sound, sound, SoundLibrary } from '@pixi/sound'
-import { DisplayObject, Sprite } from "pixi.js";
+import { DisplayObject, Sprite, Texture } from "pixi.js";
 
 // Step2
 // ToDo: Animate Object
@@ -16,6 +16,11 @@ const images = [
   { name: "Waldo", url: "../assets/catanimation/Animation-Waldo.gif" },
   { name: "toasterIdle", url: "../assets/things/toaster/idle/grille_pain.png" }
 ]
+
+const catFrames = [
+  Texture.from("../assets/catanimation/Walk1.png"),
+  Texture.from("../assets/catanimation/Walk2.png")
+];
 
 //Global variables
 let app: PIXI.Application;
@@ -84,23 +89,28 @@ export class AppComponent {
 
 function setup() {
   const backgroundSprite = new PIXI.Sprite(resources['background'].texture);
-  const catTexture = new PIXI.Sprite(resources['Waldo'].texture);
+  //const catTexture = new PIXI.Sprite(resources['Waldo'].texture);
   const toasterIdle = new PIXI.Sprite(resources['toasterIdle'].texture);
   backgroundAlignment(backgroundSprite, window)
   stage.addChild(backgroundSprite);
 
   //Setting cat
   cat = new PIXI.Container();
-  catTexture.interactive = true;
-  cat.buttonMode = true;
-  catTexture.on('pointerdown', playSoundFunction('woop'))
-  cat.addChild(catTexture);
+  //catTexture.interactive = true;
+  //cat.buttonMode = true;
+  //catTexture.on('pointerdown', playSoundFunction('woop'))
+  //cat.addChild(catTexture);
+  const catWalkAnimation = new PIXI.AnimatedSprite(catFrames);
+  
+  catWalkAnimation.animationSpeed = 0.05;
+  catWalkAnimation.play();
+  cat.addChild(catWalkAnimation)
 
   //Setting toaster
   toaster = new PIXI.Container();
-  toasterIdle.interactive = true;
-  toaster.buttonMode = true;
-  toasterIdle.on('pointerdown', playSoundFunction("toaster-start"))
+  //toasterIdle.interactive = true;
+  //toaster.buttonMode = true;
+  //toasterIdle.on('pointerdown', playSoundFunction("toaster-start"))
   toaster.addChild(toasterIdle);
 
   //Actually starts the game by running gameLoop function.
@@ -138,14 +148,15 @@ function initPlay() {
   gameState = handlePlay;
   stage.addChild(cat);
   stage.addChild(toaster);
+  app.start();
 }
 
 //Used as main game loop
 function handlePlay(delta: number) {
   // Update the sprite's X position based on the cosine of our elapsed time.  We divide
   // by 50 to slow the animation down a bit...
-  cat.x = 100.0 + Math.cos(elapsedTime / 50.0) * 100.0;
-  cat.y = window.innerHeight * 0.6 + Math.sin(elapsedTime / 50) * 50
+  cat.x = 200.0 + Math.cos(elapsedTime / 50.0) * 100.0;
+  cat.y = window.innerHeight * 0.5 + Math.sin(elapsedTime / 50) * 50
 }
 
 //Used to handle *?guess what?*
