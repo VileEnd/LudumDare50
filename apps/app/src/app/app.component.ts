@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import * as PIXI from 'pixi.js'
 import { htmlaudio, Sound, sound, SoundLibrary } from '@pixi/sound'
 import { DisplayObject, Sprite, Texture, Ticker } from "pixi.js";
-import { isIdentifier } from '@angular/compiler';
 
 // Step2
 // ToDo: Animate Object
@@ -14,7 +13,6 @@ const sounds = [
 
 const images = [
   { name: "background", url: "../assets/backgrounds/CuisineV1.jpg" },
-  { name: "Waldo", url: "../assets/catanimation/Animation-Waldo.gif" },
   { name: "toasterIdle", url: "../assets/things/toaster/idle/grille_pain.png" }
 ]
 
@@ -28,32 +26,45 @@ const toasterTriggeredFrames = [
   Texture.from("../assets/things/toaster/triggered/Pict2.png")
 ];
 
-//Global variables
+const toasterFailedFrames = [
+  Texture.from("../assets/things/toaster/failed/1.png"),
+  Texture.from("../assets/things/toaster/failed/2.png"),
+  Texture.from("../assets/things/toaster/failed/3.png")
+];
+
+//---- Global variables
 let app: PIXI.Application;
 let stage: PIXI.Container;
 let elapsedTime = 0.0;
-let firstScreenPauseTimeInMs = 1000;
+let cat: PIXI.Container;
+let toaster: PIXI.Container;
+//Current game state, could be : handleMainMenu, handlePlay, handleGameOver
+let gameState = handleMainMenu;
+//---- Constants
+//Game Stuff
+const firstScreenPauseTimeInMs = 1000;
 const messagePositionX = 400;
 const messagePositionY = 10;
+const welcomeMessage = "Welcome ! o/"
+const gameOverMessage = "CAT DED, GAMEOV3R"
+const respawnDelayMs = 5000;
 //Cat-stuff
-let cat: PIXI.Container;
-let catAnimationSpeed = 0.05;
-let catStartPositionX = 1000;
-let catStartPositionY = 600;
-let catMaxWalkLimitX = 1500
-let catMinWalkLimitX = 500
-let catSpeed = 1;
+const catAnimationSpeed = 0.05;
+const catStartPositionX = 1000;
+const catStartPositionY = 600;
+const catMaxWalkLimitX = 1500
+const catMinWalkLimitX = 500
+const catSpeed = 1;
+const catLives = 3;
 const catTriggerChancePercent = 90;
 const catDelayAfterEventMs = 3000;
 //Toaster-stuff
-let toaster: PIXI.Container;
-let toasterAnimationSpeed = 0.05;
-let toasterStartPositionX = 100;
-let toasterStartPositionY = 300;
+const toasterTriggeredAnimationSpeed = 0.05;
+const toasterFailedAnimationSpeed = 0.02;
+const toasterStartPositionX = 100;
+const toasterStartPositionY = 300;
 const toasterTimeToExplodeMs = 2000;
-//Current game state, could be : handleMainMenu, handlePlay, handleGameOver
-let gameState = handleMainMenu;
-//Constants : Do not change unless you like refacto
+//Do not change unless you like refacto
 const resources = PIXI.Loader.shared.resources
 
 function backgroundAlignment(spriteSize: Sprite, windowSize: Window) {
@@ -108,7 +119,6 @@ export class AppComponent {
 
 function setup() {
   const backgroundSprite = new PIXI.Sprite(resources['background'].texture);
-  //const catTexture = new PIXI.Sprite(resources['Waldo'].texture);
   backgroundAlignment(backgroundSprite, window)
   stage.addChild(backgroundSprite);
 
@@ -141,7 +151,7 @@ function gameLoop(delta: number) {
   gameState(Ticker.shared.deltaMS);
 }
 
-const message = new PIXI.Text("Welcome ! o/", { align: 'center' });
+const message = new PIXI.Text(welcomeMessage, { align: 'center' });
 let isDisplayed = false;
 function handleMainMenu(delta: number) {
   if (!isDisplayed) {
@@ -174,18 +184,58 @@ function handlePlay(delta: number) {
   updateCat(delta)
   updateToaster(delta)
   checkForCollisions(delta)
+  checkRespawns(delta)
 }
 
 //Used to handle *?guess what?*
 function handleGameOver(delta: number) {
-  displayMessage("CAT DED, GAMEOV3R")
+  displayMessage(gameOverMessage)
+}
+
+function updateCat(delta: number) {
+  cat.x += Cat.speed;
+
+  //Change  direction is is at screen bounds
+  if (cat.x > catMaxWalkLimitX || cat.x < catMinWalkLimitX) {
+    Cat.speed = -Cat.speed
+  }
+
+  if (Cat.speed > 0) {
+    cat.scale.x = -1;
+  } else {
+    cat.scale.x = 1;
+  }
+
+  if (Cat.isVisible) {
+    Cat.elapsedTimeSinceEventMs += delta
+  }
+}
+
+function updateToaster(delta: number) {
+  if (Toaster.isTriggered) {
+    Toaster.elapsedTriggeredTimeMs += delta
+    if (Toaster.elapsedTriggeredTimeMs >= toasterTimeToExplodeMs) {
+      Toaster.explode();
+    }
+  }
 }
 
 function checkForCollisions(delta: number) {
   if (isRectangleColliding(cat, toaster) && Cat.doesTriggers()) {
-    Toaster.triggerToaster()
+    Toaster.trigger()
     //gameState = handleGameOver
   }
+}
+
+function checkRespawns(delta: number) {
+  if (Cat.justDied) {
+    Cat.elapsedTimeSinceDeath += delta;
+    if(Cat.elapsedTimeSinceDeath >= respawnDelayMs){
+      Cat.respawn()
+      Toaster.unTrigger();
+    }
+  }
+
 }
 
 
@@ -261,30 +311,13 @@ function isRectangleColliding(r1: any, r2: any) {
 
 
 // --------------------- Cat stuff ------------------------- //
-function updateCat(delta: number) {
-  cat.x += Cat.speed;
-
-  //Change  direction is is at screen bounds
-  if (cat.x > catMaxWalkLimitX || cat.x < catMinWalkLimitX) {
-    Cat.speed = -Cat.speed
-  }
-
-  if (Cat.speed > 0) {
-    cat.scale.x = -1;
-  } else {
-    cat.scale.x = 1;
-  }
-
-  if (Cat.isVisible) {
-    Cat.elapsedTimeSinceEventMs += delta
-  }
-}
-
-
 abstract class Cat {
   static isVisible: boolean = true;
   static elapsedTimeSinceEventMs: number;
   static speed: number = catSpeed;
+  static livesLeft: number = catLives;
+  static justDied: boolean = false;
+  static elapsedTimeSinceDeath: number = 0;
 
   //Random % chance to trigger an event
   static doesTriggers() {
@@ -314,28 +347,37 @@ abstract class Cat {
     } else {
       Cat.speed = 0;
     }
+  }
 
+  static removeLifeOrGameOver() {
+    Cat.livesLeft -= 1;
+    if (Cat.livesLeft <= 0) {
+      gameState = handleGameOver;
+    } else {
+      Cat.justDied = true;
+    }
+  }
+
+  static respawn() {
+    cat.x = catStartPositionX;
+    cat.y = catStartPositionY;
+    Cat.switchVisibilityTo(true);
+    Cat.justDied = false;
+    Cat.elapsedTimeSinceDeath = 0;
   }
 }
 
 
 
 // --------------------- Toaster stuff ------------------------- //
-function updateToaster(delta: number) {
-  if (Toaster.isTriggered) {
-    Toaster.elapsedTriggeredTimeMs += delta
-    if (Toaster.elapsedTriggeredTimeMs >= Toaster.timeToExplose) {
-      Toaster.explode();
-    }
-  }
-}
-
 function onToasterClick() {
-  if (Toaster.isTriggered) {
-    //handleSomething : god saves the cat
-    Toaster.unTriggerToaster();
-  } else {
-    sound.play("toaster-start");
+  if (gameState != handleGameOver) {
+    if (Toaster.isTriggered) {
+      //handleSomething : god saves the cat
+      Toaster.unTrigger();
+    } else {
+      sound.play("toaster-start");
+    }
   }
 }
 
@@ -343,17 +385,16 @@ function onToasterClick() {
 abstract class Toaster {
   static isTriggered: boolean = false;
   static elapsedTriggeredTimeMs: number = 0;
-  static timeToExplose: number = toasterTimeToExplodeMs;
 
-  static triggerToaster() {
+  static trigger() {
     Cat.switchVisibilityTo(false);
-    const toasterTriggeredAnimation = createAnimation(toasterTriggeredFrames, toasterAnimationSpeed)
+    const toasterTriggeredAnimation = createAnimation(toasterTriggeredFrames, toasterTriggeredAnimationSpeed)
     toaster.removeChildren(0)
     toaster.addChild(toasterTriggeredAnimation)
     Toaster.isTriggered = true;
   }
 
-  static unTriggerToaster() {
+  static unTrigger() {
     Cat.switchVisibilityTo(true);
     toaster.removeChildren(0)
     toaster.addChild(new PIXI.Sprite(resources['toasterIdle'].texture));
@@ -364,7 +405,12 @@ abstract class Toaster {
   static explode() {
     Cat.switchVisibilityTo(false);
     console.log("boom, RIP the cat (animation coming soon)");
-    gameState = handleGameOver;
+    const toasterTriggeredAnimation = createAnimation(toasterFailedFrames, toasterFailedAnimationSpeed)
+    toaster.removeChildren(0)
+    toasterTriggeredAnimation.loop = false;
+    toaster.addChild(toasterTriggeredAnimation)
+    Toaster.isTriggered = false;
+    Cat.removeLifeOrGameOver();
   }
 }
 
