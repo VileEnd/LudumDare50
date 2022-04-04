@@ -17,7 +17,7 @@ const images = [
   { name: "toasterIdle", url: "../assets/things/toaster/idle/grille_pain.png" }
 ]
 
-const catFrames = [
+const catWalkingFrames = [
   Texture.from("../assets/catanimation/Walk1.png"),
   Texture.from("../assets/catanimation/Walk2.png")
 ];
@@ -95,11 +95,10 @@ function setup() {
 
   //Setting cat
   cat = new PIXI.Container();
-  //catTexture.interactive = true;
-  //cat.buttonMode = true;
-  //catTexture.on('pointerdown', playSoundFunction('woop'))
-  //cat.addChild(catTexture);
-  const catWalkAnimation = createAnimation(catFrames, catAnimationSpeed);
+  const catWalkAnimation = createAnimation(catWalkingFrames, catAnimationSpeed);
+  catWalkAnimation.interactive = true;
+  catWalkAnimation.buttonMode = true;
+  catWalkAnimation.on('pointerdown', playSoundFunction('woop'))
   cat.addChild(catWalkAnimation)
 
   //Setting toaster
@@ -149,17 +148,18 @@ function initPlay() {
 
 //Used as main game loop
 function handlePlay(delta: number) {
-  // Update the sprite's X position based on the cosine of our elapsed time.  We divide
-  // by 50 to slow the animation down a bit...
-  cat.x = 200.0 + Math.cos(elapsedTime / 50.0) * 100.0;
-  cat.y = window.innerHeight * 0.5 + Math.sin(elapsedTime / 50) * 50
+  cat.x = 800;
+  cat.y = 600;
+  toaster.x = 100;
+  toaster.y = 300;
+  //cat.x = 200.0 + Math.cos(elapsedTime / 50.0) * 100.0;
+  //cat.y = window.innerHeight * 0.5 + Math.sin(elapsedTime / 50) * 50
 }
 
 //Used to handle *?guess what?*
 function handleGameOver(delta: number) {
   //testMessage.text = "CAT DED, GAMEOV3R"
 }
-
 
 function playSoundFunction(soundName: string) {
   return function () { sound.play(soundName); }
