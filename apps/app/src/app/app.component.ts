@@ -7,8 +7,8 @@ import { DisplayObject, Sprite, Texture } from "pixi.js";
 // ToDo: Animate Object
 
 const sounds = [
-  sound.add('woop','../assets/sound/build1soundTest_01.mp3' ),
-  sound.add('toaster-start','../assets/sound/toaster-start(short)_01.mp3')
+  sound.add('woop', '../assets/sound/build1soundTest_01.mp3'),
+  sound.add('toaster-start', '../assets/sound/toaster-start(short)_01.mp3')
 ]
 
 const images = [
@@ -28,6 +28,7 @@ let stage: PIXI.Container;
 let elapsedTime = 0.0;
 //Cat-stuff
 let cat: PIXI.Container;
+let catAnimationSpeed = 0.05;
 //Toaster-stuff
 let toaster: PIXI.Container;
 //Current game state, could be : handleMainMenu, handlePlay, handleGameOver
@@ -71,8 +72,6 @@ export class AppComponent {
     antialias: true,
   });
 
-  private actor: Actor[] = [];
-
   ngOnInit(): void {
     console.log(window.innerHeight, window.innerWidth)
     document.body.appendChild(this.app.view);
@@ -100,10 +99,7 @@ function setup() {
   //cat.buttonMode = true;
   //catTexture.on('pointerdown', playSoundFunction('woop'))
   //cat.addChild(catTexture);
-  const catWalkAnimation = new PIXI.AnimatedSprite(catFrames);
-  
-  catWalkAnimation.animationSpeed = 0.05;
-  catWalkAnimation.play();
+  const catWalkAnimation = createAnimation(catFrames, catAnimationSpeed);
   cat.addChild(catWalkAnimation)
 
   //Setting toaster
@@ -165,7 +161,14 @@ function handleGameOver(delta: number) {
 }
 
 
-function playSoundFunction(soundName : string){
-  return function(){sound.play(soundName);}
+function playSoundFunction(soundName: string) {
+  return function () { sound.play(soundName); }
+}
+
+function createAnimation(frames: Texture[], animationSpeed: number) {
+  const animation = new PIXI.AnimatedSprite(frames);
+  animation.animationSpeed = animationSpeed
+  animation.play()
+  return animation;
 }
 
