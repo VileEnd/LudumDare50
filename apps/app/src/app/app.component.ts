@@ -30,13 +30,15 @@ let firstScreenPauseTimeNotInMs = 100;
 //Cat-stuff
 let cat: PIXI.Container;
 let catAnimationSpeed = 0.05;
-let catStartPositionX = 800;
+let catStartPositionX = 1000;
 let catStartPositionY = 600;
 let catMaxWalkLimitX = 1500
 let catMinWalkLimitX = 500
 let catSpeed = 1;
 //Toaster-stuff
 let toaster: PIXI.Container;
+let toasterStartPositionX = 100;
+let toasterStartPositionY = 300;
 //Current game state, could be : handleMainMenu, handlePlay, handleGameOver
 let gameState = handleMainMenu;
 //Constants : Do not change unless you like refacto
@@ -127,17 +129,17 @@ function gameLoop(delta: number) {
   gameState(delta);
 }
 
-const welcomeMessage = new PIXI.Text("Welcome ! o/", { align: 'center' });
+const message = new PIXI.Text("Welcome ! o/", { align: 'center' });
 let isDisplayed = false;
 function handleMainMenu(delta: number) {
   if (!isDisplayed) {
-    welcomeMessage.position.set(400, 10)
-    stage.addChild(welcomeMessage)
+    message.position.set(400, 10)
+    stage.addChild(message)
     isDisplayed = true;
   }
 
   if (elapsedTime > firstScreenPauseTimeNotInMs) {
-    welcomeMessage?.destroy()
+    stage.removeChild(message)
     gameState = initPlay
   }
 }
@@ -149,6 +151,8 @@ function initPlay() {
   stage.addChild(cat);
   cat.x = catStartPositionX;
   cat.y = catStartPositionY;
+  toaster.x = toasterStartPositionX;
+  toaster.y = toasterStartPositionY;
   stage.addChild(toaster);
   app.start();
 }
@@ -156,21 +160,29 @@ function initPlay() {
 //Used as main game loop
 function handlePlay(delta: number) {
   updateCat(delta)
-  toaster.x = 100;
-  toaster.y = 300;
-  //cat.x = 200.0 + Math.cos(elapsedTime / 50.0) * 100.0;
-  //cat.y = window.innerHeight * 0.5 + Math.sin(elapsedTime / 50) * 50
+  checkForCollisions(delta)
 }
 
 //Used to handle *?guess what?*
 function handleGameOver(delta: number) {
-  //testMessage.text = "CAT DED, GAMEOV3R"
+  displayMessage("CAT DED, GAMEOV3R")
+}
+
+function checkForCollisions(delta: number) {
+  if (isRectangleColliding(cat, toaster)) {
+    gameState = handleGameOver
+  }
 }
 
 
 // --------------------- utils ------------------------- //
 function playSoundFunction(soundName: string) {
   return function () { sound.play(soundName); }
+}
+
+function displayMessage(text: string) {
+  message.text = text;
+  stage.addChild(message)
 }
 
 function createAnimation(frames: Texture[], animationSpeed: number) {
@@ -180,16 +192,69 @@ function createAnimation(frames: Texture[], animationSpeed: number) {
   return animation;
 }
 
+//Yoinked code to check collision with two rectangles
+function isRectangleColliding(r1: any, r2: any) {
+  if (r2.hitArea != null) {
+    r2 = new PIXI.Rectangle(r2.x + r2.hitArea.x, r2.y + r2.hitArea.y, r2.hitArea.width, r2.hitArea.height)
+  }
+  //Define the variables we'll need to calculate
+  let isHit, combinedHalfWidths, combinedHalfHeights, vx, vy;
+
+  //hit will determine whether there's a collision
+  isHit = false;
+
+  //Find the center points of each sprite
+  r1.centerX = r1.x + r1.width / 2;
+  r1.centerY = r1.y + r1.height / 2;
+  r2.centerX = r2.x + r2.width / 2;
+  r2.centerY = r2.y + r2.height / 2;
+
+  //Find the half-widths and half-heights of each sprite
+  r1.halfWidth = r1.width / 2;
+  r1.halfHeight = r1.height / 2;
+  r2.halfWidth = r2.width / 2;
+  r2.halfHeight = r2.height / 2;
+
+  //Calculate the distance vector between the sprites
+  vx = r1.centerX - r2.centerX;
+  vy = r1.centerY - r2.centerY;
+
+  //Figure out the combined half-widths and half-heights
+  combinedHalfWidths = r1.halfWidth + r2.halfWidth;
+  combinedHalfHeights = r1.halfHeight + r2.halfHeight;
+
+  //Check for a collision on the x axis
+  if (Math.abs(vx) < combinedHalfWidths) {
+
+    //A collision might be occurring. Check for a collision on the y axis
+    if (Math.abs(vy) < combinedHalfHeights) {
+
+      //There's definitely a collision happening
+      isHit = true;
+    } else {
+
+      //There's no collision on the y axis
+      isHit = false;
+    }
+  } else {
+
+    //There's no collision on the x axis
+    isHit = false;
+  }
+
+  return isHit;
+};
+
 
 // --------------------- Cat controller ------------------------- //
 function updateCat(delta: number) {
   cat.x += catSpeed;
 
-  if(cat.x > catMaxWalkLimitX || cat.x < catMinWalkLimitX){
+  if (cat.x > catMaxWalkLimitX || cat.x < catMinWalkLimitX) {
     catSpeed = -catSpeed
   }
 
-  if(catSpeed > 0){
+  if (catSpeed > 0) {
     cat.scale.x = -1;
   } else {
     cat.scale.x = 1;
