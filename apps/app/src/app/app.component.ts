@@ -8,7 +8,13 @@ import { DisplayObject, Sprite, Texture, Ticker } from "pixi.js";
 
 const sounds = [
   sound.add('woop', '../assets/sound/build1soundTest_01.mp3'),
-  sound.add('toaster-start', '../assets/sound/toaster-start(short)_01.mp3')
+  sound.add('toaster-start', '../assets/sound/toaster-start(short)_01.mp3'),
+  sound.add('toaster-fuse', '../assets/sound/toaster-fuse(10s)_01.mp3'),
+  sound.add('toaster-psch', '../assets/sound/toaster-psch(short)_01.mp3'),
+  sound.add('toaster-explode', '../assets/sound/toaster-tic+boom(short)_01.mp3')
+
+
+
 ]
 
 const images = [
@@ -60,7 +66,7 @@ const catTriggerChancePercent = 90;
 const catDelayAfterEventMs = 3000;
 //Toaster-stuff
 const toasterTriggeredAnimationSpeed = 0.05;
-const toasterFailedAnimationSpeed = 0.02;
+const toasterFailedAnimationSpeed = 0.03;
 const toasterStartPositionX = 100;
 const toasterStartPositionY = 300;
 const toasterTimeToExplodeMs = 2000;
@@ -230,7 +236,7 @@ function checkForCollisions(delta: number) {
 function checkRespawns(delta: number) {
   if (Cat.justDied) {
     Cat.elapsedTimeSinceDeath += delta;
-    if(Cat.elapsedTimeSinceDeath >= respawnDelayMs){
+    if (Cat.elapsedTimeSinceDeath >= respawnDelayMs) {
       Cat.respawn()
       Toaster.unTrigger();
     }
@@ -375,6 +381,8 @@ function onToasterClick() {
     if (Toaster.isTriggered) {
       //handleSomething : god saves the cat
       Toaster.unTrigger();
+      sound.stop("toaster-fuse");
+      sound.play("toaster-psch");
     } else {
       sound.play("toaster-start");
     }
@@ -392,6 +400,7 @@ abstract class Toaster {
     toaster.removeChildren(0)
     toaster.addChild(toasterTriggeredAnimation)
     Toaster.isTriggered = true;
+    sound.play("toaster-fuse");
   }
 
   static unTrigger() {
@@ -411,6 +420,8 @@ abstract class Toaster {
     toaster.addChild(toasterTriggeredAnimation)
     Toaster.isTriggered = false;
     Cat.removeLifeOrGameOver();
+    sound.stop("toaster-fuse");
+    sound.play("toaster-explode")
   }
 }
 
